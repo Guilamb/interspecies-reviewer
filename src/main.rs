@@ -92,6 +92,7 @@ fn replace_social_media(website: &str) -> &str {
         "x.com" => "https://fixvx.com",
         "vm.tiktok.com" => "https://vm.vxtiktok.com",
         "instagram.com" => "https://ddinstagram.com",
+        "pixiv.net" => "https://phixiv.net",
         _ => "None",
     }
 }

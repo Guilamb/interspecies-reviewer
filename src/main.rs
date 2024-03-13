@@ -6,7 +6,8 @@ use serenity::{
     utils::MessageBuilder, builder::EditMessage
 };
 use url::{Url, Position};
-use std::env;
+use regex::Regex;
+use std::{env, fmt::format};
 
 struct Handler;
 
@@ -14,14 +15,44 @@ struct Handler;
 impl EventHandler for Handler {
 
     async fn message(&self, ctx: Context, mut msg: Message) {
-        // Respond to messages that start with "https://"
-
-        if msg.content.contains("https://") && msg.author.tag() != "InterspeciesReviewer#3272" {
 
 
-            let message = change_link(msg.content.clone());
+        let msg_content = msg.content.clone();
+ 
+
+        // Check if the message contains "http://" or "https://", and ignore messages from the bot to avoid endless loop
+        if (msg_content.contains("https://") || msg_content.contains("http://")) && msg.author.tag() != "InterspeciesReviewer#3272" {
+
+            println!("msg reçu : {}", msg_content);
+
+            let seperator = Regex::new(r"(https?://([\^\-_.~!*'();:@&=+$,/?%#A-z0-9]+))").expect("Invalid regex");
+            let spoilers_regex = Regex::new(r"\|\| *(https?://([\^\-_.~!*'();:@&=+$,/?%#A-z0-9]+)) *\|\|").expect("Invalid spoiler regex");
+            
+            
+
+            let  mut raw_url = "None";
+            
+            // Capture the URL using the regex pattern
+            if let Some(captures) = seperator.captures(msg_content.as_str()) {
+                // Extract the URL from the first capturing group
+                if let Some(url) = captures.get(1) {
+                    // Get the matched URL as a string
+                    raw_url = url.as_str();
+                }
+            }
+
+            let mut message = change_link(raw_url.to_string());
+
+            if spoilers_regex.is_match(msg_content.as_str()) {
+                message = format!("|| {message} ||");
+            }
+            
+
+
             if !message.contains("None") {
 
+
+                // Build a response message
                 let response = MessageBuilder::new()
                 .push("User ")
                 .push_bold_safe(&msg.author.name)
@@ -30,17 +61,19 @@ impl EventHandler for Handler {
                 .build();
 
             
+                // Send the response message
                 if let Err(why) = msg.reply(&ctx.http, &response).await {
                     println!("Error sending message: {why:?}");
                 }
+
+                // Delete reactions from the original message
                 if let Err(reason) = msg.delete_reactions(&ctx.http).await{
                     println!("Error sending message: {reason:?}");
 
                 }
 
+                // Edit the original message to delete embeds
                 let rep = EditMessage::new().suppress_embeds(true);
-
-                
                 if let Err(reason) = msg.edit(&ctx.http, rep).await{
                     println!("Error with delete -_- : {reason:?}" );
                 };
@@ -61,15 +94,15 @@ fn change_link(url: String) -> String {
     let issue_list_url = Url::parse(&url);
     let mut final_url = "None".to_string();
 
+
+    //Attempt to parse the URL, and if succeded print and use the URL components
     match issue_list_url {
         Ok(url) => {
-            // Parsing succeeded, print and use the URL components
-            println!("website: {}, path: {}", url.host_str().unwrap_or("N/A"), url.path());
+            //println!("website: {}, path: {}", url.host_str().unwrap_or("N/A"), url.path());
             final_url = replace_social_media(url.host_str().unwrap_or("N/A")).to_string() + &url[Position::BeforePath..];
-            println!("final url : {}", final_url.as_str())
+            //println!("final url : {}", final_url.as_str())
         }
         Err(e) => {
-            // Parsing failed, print the error
             println!("Error parsing URL: {:?}", e);
         }
     }
@@ -82,11 +115,10 @@ fn replace_social_media(website: &str) -> &str {
     let mut updated_website = website.to_string();
 
     if updated_website.contains("www") {
-        // Modify the String directly
         updated_website = updated_website.replace("www.", "");
-        println!("Replaced www, result: {}", updated_website);
     }
 
+    // Replace social media URLs with fixed URLs
     match updated_website.as_str() {
         "twitter.com" => "https://vxtwitter.com",
         "x.com" => "https://fixvx.com",
@@ -115,4 +147,3 @@ async fn main() {
         println!("Client error: {:?}", why);
     }
 }
-

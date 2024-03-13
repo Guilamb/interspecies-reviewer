@@ -1,8 +1,8 @@
 # Interspecies Reviewer
 [![forthebadge made-with-rust](https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white)](https://www.rust-lang.org/) 
 
-![Build Status](https://github.com/guilamb/interspecies_reviewer/actions/workflows/build.yaml/badge.svg?branch=main)
-![Security Status](https://github.com/guilamb/interspecies_reviewer/actions/workflows/gitgardian.yaml/badge.svg?branch=main)
+![Build Status](https://github.com/guilamb/interspecies-reviewer/actions/workflows/build.yaml/badge.svg?branch=main)
+![Security Status](https://github.com/guilamb/interspecies-reviewer/actions/workflows/gitgardian.yaml/badge.svg?branch=main)
 
 Interspecies Reviewer is a Discord bot written in Rust. The primary purpose of this bot is to automatically replace social network links with variants that fix the Discord embed issues. For example, it would changes `twitter.com` links to `fxtwitter.com` to ensure proper embed rendering.
 

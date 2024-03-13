@@ -46,4 +46,4 @@ jobs:
             ghcr.io/guilamb/interspecies-reviewer:latest
             ghcr.io/guilamb/interspecies-reviewer:${{ github.run_number }}
           secrets: |
-            "github_token=${{ secrets.REGISTRY_TOKEN }}"
+            "github_token=${{ secrets.GITHUB_TOKEN }}"

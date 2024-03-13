@@ -43,7 +43,7 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ghcr.io/guilamb/interspecies_reviewer:dev-latest
-            ghcr.io/guilamb/interspecies_reviewer:dev-${{ github.run_number }}
+            ghcr.io/guilamb/interspecies_reviewer:latest
+            ghcr.io/guilamb/interspecies_reviewer:${{ github.run_number }}
           secrets: |
             "github_token=${{ secrets.DISCORD_TOKEN }}"

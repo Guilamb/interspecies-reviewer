@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: interspecies-reviewer
+  name: interspecies-reviewer
+  namespace: interspecies-reviewer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: interspecies-reviewer
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: interspecies-reviewer
+    spec:
+      containers:
+      - image: ghcr.io/guilamb/interspecies-reviewer:latest
+        name: interspecies-reviewer
+        env:
+          - name: DISCORD_TOKEN    
+            value: ${DISCORD_TOKEN}
+        resources: {}
+status: {}

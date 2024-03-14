@@ -1,8 +1,16 @@
-name: Build
-run-name: ${{ github.actor }} is building the app 🏗️
+name: Build and Deploy
+run-name: ${{ github.actor }} is building and deploying the app 🏗️
 on:
-  # push
- workflow_dispatch:
+  push:
+    tags:
+      - 'v[0-9].[0-9]+.[0-9]+'
+    branches:
+      - main
+  workflow_dispatch:
+    permissions:
+      users: 
+        - github.repository_owner
+
 
 jobs:
   build-musl:
@@ -47,3 +55,19 @@ jobs:
             ghcr.io/guilamb/interspecies-reviewer:${{ github.run_number }}
           secrets: |
             "github_token=${{ secrets.GITHUB_TOKEN }}"
+
+  deploy:
+    needs: build-musl
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set secret as environment variable
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+        run: echo "DISCORD_TOKEN=$DISCORD_TOKEN" >> $GITHUB_ENV
+
+      - name: Substitute secret in deployment YAML
+        run: |
+          envsubst < deployment.yaml > deployment_with_secret.yaml
+
+      - name: Deploy to Kubernetes
+        run: kubectl apply -f deployment_with_secret.yaml

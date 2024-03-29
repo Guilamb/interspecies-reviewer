@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: interspecies-reviewer-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: interspecies-reviewer
+  template:
+    metadata:
+      labels:
+        app: interspecies-reviewer
+    spec:
+      containers:
+        - name: interspecies-reviewer
+          image: ghcr.io/guilamb/interspecies-reviewer:latest
+          env:
+            - name: DISCORD_TOKEN
+              value: DISCORD_TOKEN_SECRET
+      imagePullSecrets:
+        - name: github-container-registry

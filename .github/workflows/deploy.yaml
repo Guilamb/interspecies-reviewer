@@ -1,0 +1,41 @@
+name: Deploy
+run-name: ${{ github.actor }} is deploying the app 🛫
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    if: github.actor == github.event.repository.owner.login
+
+
+    
+    steps:
+      - name: Set the Kubernetes context
+        uses: azure/k8s-set-context@v2
+        with:
+          method: service-account
+          k8s-url: ${{ secrets.SERVER_URL }}
+          k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
+
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Inject secret into manifest
+        run: awk -i inplace -v secret="${{ secrets.DISCORD_TOKEN }}" '{gsub("DISCORD_TOKEN_SECRET", secret)}1' kubernetes/deployment.yaml
+            
+
+      - name: Deploy to the Kubernetes cluster
+        uses: azure/k8s-deploy@v1
+        with:
+          action: deploy
+          strategy: basic
+          namespace: interspecies-reviewer
+          manifests: |
+            kubernetes/deployment.yaml
+          images: |
+            ghcr.io/guilamb/interspecies-reviewer:latest
+          imagepullsecrets: |
+            github-container-registry

@@ -56,8 +56,9 @@ impl EventHandler for Handler {
                 let response = MessageBuilder::new()
                 .push("User ")
                 .push_bold_safe(&msg.author.name)
-                .push(" sent ")
+                .push(" sent [:](")
                 .push(message)
+                .push(")")
                 .build();
 
             
@@ -131,7 +132,7 @@ fn replace_social_media(website: &str) -> &str {
 
 #[tokio::main]
 async fn main() {
-    let token =  env::var("DISCORD_TOKEN").expect("Token not found");
+    let token = env::var("DISCORD_TOKEN").expect("Token not found");
     let intents = GatewayIntents::GUILD_MESSAGES
         | GatewayIntents::DIRECT_MESSAGES
         | GatewayIntents::MESSAGE_CONTENT;

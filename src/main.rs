@@ -1,5 +1,8 @@
+mod commands;
 use serenity::{
     async_trait,
+    builder::{CreateInteractionResponse, CreateInteractionResponseMessage},
+    model::application::{Command,Interaction},
     model::channel::Message,
     model::{gateway::Ready},
     prelude::*,
@@ -7,7 +10,7 @@ use serenity::{
 };
 use url::{Url, Position};
 use regex::Regex;
-use std::{env, fmt::format};
+use std::{env};
 
 struct Handler;
 
@@ -81,13 +84,37 @@ impl EventHandler for Handler {
             }
             
         }
+
+
+    }
+    async fn interaction_create(&self, ctx: Context, interaction: Interaction){
+        if let Interaction::Command(command) = interaction {
+            println!("Interaction received");
+            match command.data.name.as_str(){
+                "source" => {
+                    let data = CreateInteractionResponseMessage::new().content("https://github.com/Guilamb/interspecies-reviewer/issues");
+                    let builder = CreateInteractionResponse::Message(data);
+                    if let Err(why) = command.create_response(&ctx.http, builder).await {
+                        println!("Cannot respond to slash command: {why}");
+                    }
+                },
+                _ => println!("Not implemented"),
+
+            };
+        }
     }
 
 
-    async fn ready(&self, _: Context, ready: Ready) {
+    async fn ready(&self, ctx: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
+
+
+        Command::create_global_command(&ctx.http, commands::source::register())
+            .await
+            .expect("Failed to create global command");
     }
 }
+
 
 
 fn change_link(url: String) -> String {
@@ -129,9 +156,12 @@ fn replace_social_media(website: &str) -> &str {
     }
 }
 
+
+
+
 #[tokio::main]
 async fn main() {
-    let token =  env::var("DISCORD_TOKEN").expect("Token not found");
+    let token = env::var("DISCORD_TOKEN").expect("Token not found");
     let intents = GatewayIntents::GUILD_MESSAGES
         | GatewayIntents::DIRECT_MESSAGES
         | GatewayIntents::MESSAGE_CONTENT;

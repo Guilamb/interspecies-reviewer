@@ -2,10 +2,8 @@ name: Build and Deploy
 run-name: ${{ github.actor }} is building and deploying the app 🏗️
 on:
   push:
-    tags:
-      - 'v[0-9].[0-9]+.[0-9]+'
-    branches:
-      - main
+    # If we specify branches: [main] here it will run for any matching tags or push on branch main
+    tags: ['v[0-9].[0-9]+.[0-9]+']
   workflow_dispatch:
     permissions:
       users: 
@@ -15,7 +13,8 @@ on:
 jobs:
   build-musl:
     runs-on: ubuntu-latest
-    if: github.actor == github.event.repository.owner.login
+    # So we need to put the condition in the if here
+    if: ${{ (github.actor == github.event.repository.owner.login) && (github.ref == 'refs/heads/master') }}
     
     steps:
       - name: Run sccache-cache

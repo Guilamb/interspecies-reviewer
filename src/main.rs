@@ -123,7 +123,7 @@ fn replace_social_media(website: &str) -> &str {
     match updated_website.as_str() {
         "twitter.com" => "https://vxtwitter.com",
         "x.com" => "https://fixvx.com",
-        "vm.tiktok.com" => "https://vm.vxtiktok.com",
+        "vm.tiktok.com" | "tiktok.com" => "https://vm.vxtiktok.com",
         "instagram.com" => "https://ddinstagram.com",
         "pixiv.net" => "https://phixiv.net",
         _ => "None",

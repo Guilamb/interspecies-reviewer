@@ -15,6 +15,7 @@ spec:
       containers:
         - name: interspecies-reviewer
           image: ghcr.io/guilamb/interspecies-reviewer:latest
+          imagePullPolicy: Always
           env:
             - name: DISCORD_TOKEN
               value: DISCORD_TOKEN_SECRET

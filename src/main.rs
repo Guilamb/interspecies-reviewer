@@ -29,9 +29,9 @@ impl EventHandler for Handler {
             println!("msg reçu : {}", msg_content);
 
             let seperator = Regex::new(r"(https?://([\^\-_.~!*'();:@&=+$,/?%#A-z0-9]+))").expect("Invalid regex");
-            let spoilers_regex = Regex::new(r"\|\| *(https?://([\^\-_.~!*'();:@&=+$,/?%#A-z0-9]+)) *\|\|").expect("Invalid spoiler regex");
+            let spoilers_regex = Regex::new(r"\|\|\s*(https?://([\^\-_.~!*'();:@&=+$,/?%#A-z0-9]+))\s*\|\|").expect("Invalid spoiler regex");
             
-            
+
 
             let  mut raw_url = "None";
             

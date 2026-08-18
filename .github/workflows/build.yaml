@@ -84,6 +84,6 @@ jobs:
           manifests: |
             kubernetes/deployment.yaml
           images: |
-            ghcr.io/guilamb/interspecies-reviewer:latest
+            ghcr.io/guilamb/interspecies-reviewer:${{ github.run_number }}
           imagepullsecrets: |
             github-container-registry
